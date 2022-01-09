@@ -98,6 +98,15 @@ class DMListener(Cog):
                 
                 if await self.db.keys.find_one_and_update({"product_key": data["key"], "email": data["email"]}, {"$set": {"hwid": None}}, upsert=False):
                     await channel.send(embed=Embed("Key Reset Successfully", "Your key was successfully reset!", colour=0x00FF00))
+                    
+                    c = await self.bot.fetch_channel(self.bot.channel)
+                    e = Embed(title="Key Reset", colour=0x00FF00, timestamp=True)
+                    m = user_states[payload.channel_id]["message"]
+                    e.set_footer(
+                        f"{m.author.name}#{m.author.discriminator} | {m.author.id}",
+                        m.author.avatar.url if m.author.avatar else discord.Embed.Empty,
+                    )
+                    await c.send(embed=e)
                 else:
                     await channel.send(embed=Embed("Key Reset Unsuccessful", "Your email or key was incorrect!", colour=0xFF0000))
                 
