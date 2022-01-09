@@ -97,8 +97,9 @@ class DMListener(Cog):
 
                 
                 if await self.db.keys.find_one_and_update(
-                    {"product_key": data["key"], "email": data["email"], 
-                        "$or": [ {"datetime": {"$lte": datetime.now() - timedelta(weeks=1) } }, {"datetime": {"$exists": False } } ] 
+                    {
+                        "$or": [ {"product_key": data["key"], "email": data["email"], "datetime": {"$lte": datetime.now() - timedelta(weeks=1) } }, 
+                                 {"product_key": data["key"], "email": data["email"], "datetime": {"$exists": False } } ] 
                     }
                 , {"$set": {"hwid": None, "datetime": datetime.now()}}):
                     
