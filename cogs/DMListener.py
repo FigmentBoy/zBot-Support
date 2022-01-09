@@ -1,5 +1,5 @@
 from discord.ext.commands import *
-
+from datetime import datetime, timedelta
 import discord
 from discord import InvalidArgument
 from asyncio.exceptions import CancelledError
@@ -96,7 +96,11 @@ class DMListener(Cog):
                         return
 
                 
-                if await self.db.keys.find_one_and_update({"product_key": data["key"], "email": data["email"]}, {"$set": {"hwid": None}}, upsert=False):
+                if await self.db.keys.find_one_and_update({
+                    "product_key": data["key"], 
+                    "email": data["email"],
+                    "datetime": {"$lte": datetime.now() - timedelta(weeks=1)}
+                }, {"$set": {"hwid": None, "datetime": datetime.now()}}):
                     await channel.send(embed=Embed("Key Reset Successfully", "Your key was successfully reset!", colour=0x00FF00))
                     
                     c = await self.bot.fetch_channel(self.bot.channel)
@@ -108,7 +112,7 @@ class DMListener(Cog):
                     )
                     await c.send(embed=e)
                 else:
-                    await channel.send(embed=Embed("Key Reset Unsuccessful", "Your email or key was incorrect!", colour=0xFF0000))
+                    await channel.send(embed=Embed("Key Reset Unsuccessful", "You can only reset a key !", colour=0xFF0000))
                 
                 del user_states[payload.channel_id]
             
