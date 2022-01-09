@@ -214,7 +214,7 @@ class DMListener(Cog):
         )
         msg = await c.send(embed=e)
         
-        channel = await msg.create_thread(name=f"Open Thread")
+        channel = await msg.create_thread(name=f"{message.author.name}#{message.author.discriminator} | {message.author.id}")
         await channel.send(embed=embed, files=files)
         
         await self.db.ModMail.find_one_and_update({"user": message.author.id, "open": True}, {"$set": {"thread_id": channel.id, "message_id": msg.id}}, upsert=True)

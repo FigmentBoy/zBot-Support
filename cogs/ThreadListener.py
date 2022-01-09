@@ -105,11 +105,11 @@ class ThreadListener(Cog):
             await ctx.message.delete()
             
             await self.db.ModMail.find_one_and_update({"thread_id": ctx.channel.id, "open": True}, {"$set": {"open": False}})
-            await ctx.channel.edit(name="Closed Thread", archived=True, locked=True)
+            await ctx.channel.edit(archived=True, locked=True)
             
             e = Embed(title="Closed Ticket", colour=0xFF0000, timestamp=True)
             e.set_footer(
-                f"{message.author.name}#{message.author.discriminator} | {message.author.id}",
+                f"{author.name}#{author.discriminator} | {author.id}",
                 author.avatar.url if author.avatar else discord.Embed.Empty,
             )
             
