@@ -60,10 +60,13 @@ class ThreadListener(Cog):
                 await after.send(embed=embed)
                 
                 await self.db.ModMail.find_one_and_update({"thread_id": after.id, "open": True}, {"$set": {"open": False}})
-                await after.edit(name="Closed Thread", archived=True, locked=True)
+                await after.edit(name=f"{author.name}#{author.discriminator} | {author.id}", archived=True, locked=True)
                 
                 e = Embed(title="Closed Ticket", colour=0xFF0000, timestamp=True)
-                e.set_footer("Automatically closed due to inactivity.")
+                e.set_footer(
+                    f"{author.name}#{author.discriminator} | {author.id} | Timed Out",
+                    author.avatar.url if author.avatar else discord.Embed.Empty,
+                )
                 
                 msg = after.parent.get_partial_message(data.get("message_id", 0))
                 
