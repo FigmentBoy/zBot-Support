@@ -105,7 +105,7 @@ class DMListener(Cog):
                     await channel.send(embed=Embed("Key Reset Successfully", "Your key was successfully reset!", colour=0x00FF00))
                     
                     c = await self.bot.fetch_channel(self.bot.channel)
-                    e = Embed("Key Reset", f"{data.get('key')}", colour=0x00FF00, timestamp=True)
+                    e = Embed("Key Reset", f"{data.get('key')}", timestamp=True)
                     m = user_states[payload.channel_id]["message"]
                     e.set_footer(
                         f"{m.author.name}#{m.author.discriminator} | {m.author.id}",
