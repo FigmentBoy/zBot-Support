@@ -64,7 +64,7 @@ class ThreadListener(Cog):
                 
                 e = Embed(title="Closed Ticket", colour=0xFF0000, timestamp=True)
                 e.set_footer(
-                    f"{author.name}#{author.discriminator} | {author.id} | Timed Out",
+                    f"{author.name}#{author.discriminator} | {author.id}",
                     author.avatar.url if author.avatar else discord.Embed.Empty,
                 )
                 
