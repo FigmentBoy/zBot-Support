@@ -100,8 +100,7 @@ class DMListener(Cog):
                     {
                         "$or": [ {"product_key": data["key"], "email": data["email"], "datetime": {"$lte": datetime.now() - timedelta(weeks=1) } }, 
                                  {"product_key": data["key"], "email": data["email"], "datetime": {"$exists": False } } ] 
-                    }
-                , {"$set": {"hwid": None, "datetime": datetime.now()}}):
+                    }, {"$set": {"hwid": None, "datetime": datetime.now()}}):
                     
                     await channel.send(embed=Embed("Key Reset Successfully", "Your key was successfully reset!", colour=0x00FF00))
                     
@@ -114,7 +113,7 @@ class DMListener(Cog):
                     )
                     await c.send(embed=e)
                 else:
-                    await channel.send(embed=Embed("Key Reset Unsuccessful", "You can only reset a key !", colour=0xFF0000))
+                    await channel.send(embed=Embed("Key Reset Unsuccessful", "Key information incorrect!\nRemember that you can only reset a key once a week!", colour=0xFF0000))
                 
                 del user_states[payload.channel_id]
             
