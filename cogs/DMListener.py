@@ -96,11 +96,12 @@ class DMListener(Cog):
                         return
 
                 
-                if await self.db.keys.find_one_and_update({
-                    "product_key": data["key"], 
-                    "email": data["email"],
-                    "datetime": {"$lte": datetime.now() - timedelta(weeks=1)}
-                }, {"$set": {"hwid": None, "datetime": datetime.now()}}):
+                if await self.db.keys.find_one_and_update(
+                    {"product_key": data["key"], "email": data["email"], 
+                        "$or": [ {"datetime": {"$lte": datetime.now() - timedelta(weeks=1) } }, {"datetime": {"$exists": False } } ] 
+                    }
+                , {"$set": {"hwid": None, "datetime": datetime.now()}}):
+                    
                     await channel.send(embed=Embed("Key Reset Successfully", "Your key was successfully reset!", colour=0x00FF00))
                     
                     c = await self.bot.fetch_channel(self.bot.channel)
