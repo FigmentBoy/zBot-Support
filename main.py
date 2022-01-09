@@ -70,4 +70,4 @@ class SupportBot(commands.Bot):
 
 bot = SupportBot()
 
-bot.run(os.environ["bot_token"])
+bot.run(os.environ["support_token"])
