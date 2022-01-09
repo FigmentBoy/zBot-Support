@@ -162,7 +162,7 @@ class DMListener(Cog):
                 )
         else:
             if message.channel.id not in user_states:
-                embed = Embed("Support Menu", "If you need a key reset and purchased zBot through the website, react with a 🔑. For other key resets or to create a support ticket, react with a 🗣️.\nTo cancel this request, react with a ❌")
+                embed = Embed("Support Menu", "If you need a key reset and purchased zBot through the website, react with a 🔑. For other key resets or to create a support ticket, react with a 🗣️.\n\nTo cancel this request, react with a ❌")
                 msg = await message.channel.send(embed=embed)
                 
                 await msg.add_reaction("🔑")
