@@ -1,3 +1,4 @@
+# Credit to https://github.com/chamburr/modmail/
 import datetime
 
 import discord
