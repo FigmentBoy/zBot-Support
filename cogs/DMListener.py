@@ -20,6 +20,52 @@ class DMListener(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.db
+        
+    @command()
+    async def cancel(self, ctx, *, closing_message="No message provided."):
+        if ctx.author.bot or not isinstance(ctx.channel, discord.DMChannel):
+            return
+        
+        if data := await self.db.ModMail.find_one({"user": ctx.author.id, "open": True}):
+            channel = await self.bot.fetch_channel(data.get("thread_id", 0))
+            guild = channel.guild
+            
+            embed = Embed("Ticket Cancelled", closing_message, colour=0xFF0000, timestamp=True)
+            embed.set_footer(f"{guild.name} | {guild.id}", guild.icon.url if guild.icon else discord.Embed.Empty)
+
+            files = []
+            for file in ctx.message.attachments:
+                saved_file = io.BytesIO()
+                await file.save(saved_file)
+                files.append(discord.File(saved_file, file.filename))
+            
+                
+            embed.set_footer(
+                f"{ctx.author.name}#{ctx.author.discriminator} | {ctx.author.id}",
+                ctx.author.avatar.url if ctx.author.avatar else discord.Embed.Empty,
+            )
+            
+            await ctx.author.send(embed=embed, files=files)
+            
+            for file in files:
+                file.reset()
+            
+            await channel.send(embed=embed, files=files)
+            
+            await self.db.ModMail.find_one_and_update({"user": ctx.author.id, "open": True}, {"$set": {"open": False}})
+            await channel.edit(name=f"{ctx.author.name}#{ctx.author.discriminator} | {ctx.author.id}", archived=True, locked=True)
+            
+            e = Embed(title="Cancelled Ticket", colour=0xFF0000, timestamp=True)
+            e.set_footer(
+                f"{ctx.author.name}#{ctx.author.discriminator} | {ctx.author.id}",
+                ctx.author.avatar.url if ctx.author.avatar else discord.Embed.Empty,
+            )
+            
+            msg = channel.parent.get_partial_message(data.get("message_id", 0))
+            
+            await msg.edit(embed=e)
+        else:
+            return await ctx.send("There are no open support tickets!")
     
     async def ask(self, channel, m, name, question, converter, n=3):
         error = ""
@@ -119,7 +165,7 @@ class DMListener(Cog):
             
     @Cog.listener()
     async def on_message(self, message):
-        if message.author.id == self.bot.user.id or not isinstance(message.channel, discord.DMChannel):
+        if message.content.startswith("=") or message.author.id == self.bot.user.id or not isinstance(message.channel, discord.DMChannel):
             return
         
         if data := await self.db.ModMail.find_one({"user": message.author.id, "open": True}):
@@ -127,7 +173,7 @@ class DMListener(Cog):
             guild = channel.guild
             
             embed = Embed("Message Sent", message.content, colour=0x00FF00, timestamp=True)
-            embed.set_footer(f"{guild.name} | {guild.id}", guild.icon.url if guild.icon else discord.Embed.Empty)
+            embed.set_footer(f"{guild.name} | Type =cancel to close this ticket", guild.icon.url if guild.icon else discord.Embed.Empty)
 
             files = []
             for file in message.attachments:
@@ -179,7 +225,7 @@ class DMListener(Cog):
         guild = await self.bot.fetch_guild(self.bot.guild)
                     
         embed = Embed("Ticket Created", message.content, colour=0x00FF00, timestamp=True)
-        embed.set_footer(f"{guild.name} | {guild.id}", guild.icon.url if guild.icon else discord.Embed.Empty)
+        embed.set_footer(f"{guild.name} | Type =cancel to close this ticket", guild.icon.url if guild.icon else discord.Embed.Empty)
         
         files = []
         for file in message.attachments:
